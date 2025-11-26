@@ -1,55 +1,41 @@
 # OpenTelemetry Protocol (OTLP) Specification
 
-[![Build Check](https://github.com/open-telemetry/opentelemetry-proto/workflows/Build%20Check/badge.svg?branch=main)](https://github.com/open-telemetry/opentelemetry-proto/actions?query=workflow%3A%22Build+Check%22+branch%3Amain)
+* [OTLP protocol specification](docs/specification.md)
+* [.proto files](opentelemetry/proto/README.md)
+* [OTLP/JSON wire representation](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/protocol/otlp.md#json-protobuf-encoding)
+  * ALTERNATIVE to .proto files
 
-This repository contains the [OTLP protocol specification](docs/specification.md)
-and the corresponding Language Independent Interface Types ([.proto files](opentelemetry/proto)).
+## How to generate gRPC Client Libraries?
 
-## Language Independent Interface Types
-
-The proto files can be consumed as GIT submodules or copied and built directly in the consumer project.
-
-The compiled files are published to central repositories (Maven, ...) from OpenTelemetry client libraries.
-
-See [contribution guidelines](CONTRIBUTING.md) if you would like to make any changes.
-
-## OTLP/JSON
-
-See additional requirements for [OTLP/JSON wire representation here](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/protocol/otlp.md#json-protobuf-encoding).
-
-## Generate gRPC Client Libraries
-
-To generate the raw gRPC client libraries, use `make gen-${LANGUAGE}`. Currently supported languages are:
-
-* cpp
-* csharp
-* go
-* java
-* objc
-* openapi (swagger)
-* php
-* python
-* ruby
+* | this path,
+  * `make gen-${LANGUAGE}`
+    * CURRENTLY supported languages
+      * cpp
+      * csharp
+      * go
+      * java
+      * objc
+      * openapi (swagger)
+      * php
+      * python
+      * ruby
 
 ## Maturity Level
 
-1.0.0 and newer releases from this repository may contain unstable (alpha or beta)
-components as indicated by the Maturity table below.
+* [Maturity levels definition](https://github.com/open-telemetry/opentelemetry-specification/blob/a08d1f92f62acd4aafe4dfaa04ae7bf28600d49e/specification/versioning-and-stability.md) 
 
-| Component | Binary Protobuf Maturity | JSON Maturity |
-| --------- | --------------- | ------------- |
-| common/* | Stable | [Stable](docs/specification.md#json-protobuf-encoding) |
-| resource/* | Stable | [Stable](docs/specification.md#json-protobuf-encoding) |
-| metrics/\*<br>collector/metrics/* | Stable | [Stable](docs/specification.md#json-protobuf-encoding) |
-| trace/\*<br>collector/trace/* | Stable | [Stable](docs/specification.md#json-protobuf-encoding) |
-| logs/\*<br>collector/logs/* | Stable | [Stable](docs/specification.md#json-protobuf-encoding) |
-| profiles/\*<br>collector/profiles/* | Development | [Development](docs/specification.md#json-protobuf-encoding) |
-
-(See [Versioning and Stability](https://github.com/open-telemetry/opentelemetry-specification/blob/a08d1f92f62acd4aafe4dfaa04ae7bf28600d49e/specification/versioning-and-stability.md)
-for definition of maturity levels).
+| Component                           | Binary Protobuf Maturity                                      | JSON Maturity                                               |
+|-------------------------------------|---------------------------------------------------------------|-------------------------------------------------------------|
+| common/*                            | Stable   <br/> [source code](opentelemetry/proto/common)      | [Stable](docs/specification.md#json-protobuf-encoding)      |
+| resource/*                          | Stable   <br/> [source code](opentelemetry/proto/resource)    | [Stable](docs/specification.md#json-protobuf-encoding)      |
+| metrics/\*<br>collector/metrics/*   | Stable   <br/> [source code](opentelemetry/proto/metrics)     | [Stable](docs/specification.md#json-protobuf-encoding)      |
+| trace/\*<br>collector/trace/*       | Stable   <br/> [source code](opentelemetry/proto/trace)       | [Stable](docs/specification.md#json-protobuf-encoding)      |
+| logs/\*<br>collector/logs/*         | Stable   <br/> [source code](opentelemetry/proto/logs)        | [Stable](docs/specification.md#json-protobuf-encoding)      |
+| profiles/\*<br>collector/profiles/* | Development <br/> [source code](opentelemetry/proto/profiles) | [Development](docs/specification.md#json-protobuf-encoding) |
 
 ## Stability Definition
 
+* TODO:
 Components marked `Stable` provide the following guarantees:
 
 - Field types, numbers and names will not change.

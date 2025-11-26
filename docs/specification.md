@@ -16,107 +16,81 @@ cascade:
 
 # OpenTelemetry Protocol Specification
 
-**Status**:
+* OTLP
+  * == telemetry data delivery protocol / 
+    * OpenTelemetry project's scope
+    * general-purpose
+    * define 
+      * encoding,
+      * transport,
+      * delivery mechanism
+    * goal
+      * | client -- & -- server,
+        * ensure, data is NOT lost
 
-* [Stable](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/document-status.md) for the trace, metric and log signals.
-* [Development](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/document-status.md) for the profiles signal.
-
-The OpenTelemetry Protocol (OTLP) specification describes the encoding, transport,
-and delivery mechanism of telemetry data between telemetry sources, intermediate
-nodes such as collectors and telemetry backends.
-
-<details>
-<summary>Table of Contents</summary>
-
-<!-- toc -->
-
-- [Protocol Details](#protocol-details)
-  * [OTLP/gRPC](#otlpgrpc)
-    + [OTLP/gRPC Concurrent Requests](#otlpgrpc-concurrent-requests)
-    + [OTLP/gRPC Response](#otlpgrpc-response)
-      - [Full Success](#full-success)
-      - [Partial Success](#partial-success)
-      - [Failures](#failures)
-    + [OTLP/gRPC Throttling](#otlpgrpc-throttling)
-    + [OTLP/gRPC Service and Protobuf Definitions](#otlpgrpc-service-and-protobuf-definitions)
-    + [OTLP/gRPC Default Port](#otlpgrpc-default-port)
-  * [OTLP/HTTP](#otlphttp)
-    + [Binary Protobuf Encoding](#binary-protobuf-encoding)
-    + [JSON Protobuf Encoding](#json-protobuf-encoding)
-    + [OTLP/HTTP Request](#otlphttp-request)
-    + [OTLP/HTTP Response](#otlphttp-response)
-      - [Full Success](#full-success-1)
-      - [Partial Success](#partial-success-1)
-      - [Failures](#failures-1)
-      - [Bad Data](#bad-data)
-      - [OTLP/HTTP Throttling](#otlphttp-throttling)
-      - [All Other Responses](#all-other-responses)
-    + [OTLP/HTTP Connection](#otlphttp-connection)
-    + [OTLP/HTTP Concurrent Requests](#otlphttp-concurrent-requests)
-    + [OTLP/HTTP Default Port](#otlphttp-default-port)
-- [Implementation Recommendations](#implementation-recommendations)
-  * [Multi-Destination Exporting](#multi-destination-exporting)
-- [Known Limitations](#known-limitations)
-  * [Request Acknowledgements](#request-acknowledgements)
-    + [Duplicate Data](#duplicate-data)
-- [Future Versions and Interoperability](#future-versions-and-interoperability)
-- [Glossary](#glossary)
-- [References](#references)
-
-<!-- tocstop -->
-
-</details>
-
-OTLP is a general-purpose telemetry data delivery protocol designed in the scope
-of the OpenTelemetry project.
+* **Status**:
+  * [Stable](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/document-status.md) |
+    * trace,
+    * metric
+    * log
+  * [Development](https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/document-status.md) |
+    * profiles
 
 ## Protocol Details
 
-OTLP defines the encoding of telemetry data and the protocol used to exchange
-data between the client and the server.
-
-This specification defines how OTLP is implemented over
-[gRPC](https://grpc.io/) and HTTP transports and specifies
-[Protocol Buffers schema](https://developers.google.com/protocol-buffers/docs/overview)
-that is used for the payloads.
-
-OTLP is a request/response style protocol: the clients send requests, and the
-server replies with corresponding responses. This document defines one request
-and response type: `Export`.
-
-All server components MUST support the following transport compression options:
-
-* No compression, denoted by `none`.
-* Gzip compression, denoted by `gzip`.
+* OTLP
+  * is implemented | 
+    * [gRPC](https://grpc.io/)
+      * -> specified -- by -- [Protocol Buffers schema](https://developers.google.com/protocol-buffers/docs/overview)
+    * HTTP transports and specifies
+  * == request/response style protocol
+    * clients
+      * send requests
+    * intermediary nodes
+      * OPTIONAL
+      * data travel ACROSS THEM BEFORE reaching the server
+        * _Example:_ application -> agent -> collector -> backend
+    * server
+      * replies with corresponding responses
+      * components 
+        * MUST support the transport compression options
+          * NO compression -- `none` --
+          * Gzip compression -- `gzip` --
+  * `Export`
+    * == defined 
+      * request type
+      * response type 
 
 ### OTLP/gRPC
 
-After establishing the underlying gRPC transport, the client starts sending
-telemetry data using unary requests using
-[Export*ServiceRequest](https://github.com/open-telemetry/opentelemetry-proto)
-messages ([ExportLogsServiceRequest](../opentelemetry/proto/collector/logs/v1/logs_service.proto) for logs,
-[ExportMetricsServiceRequest](../opentelemetry/proto/collector/metrics/v1/metrics_service.proto) for metrics,
-[ExportTraceServiceRequest](../opentelemetry/proto/collector/trace/v1/trace_service.proto) for traces,
-[ExportProfilesServiceRequest](../opentelemetry/proto/collector/profiles/v1development/profiles_service.proto) for profiles).
-The client continuously sends a sequence of requests to the server and expects
-to receive a response to each request:
+* | establish the underlying gRPC transport,
+  * the client 
+    * CONTINUOUSLY send sequence of requests -- to the -- server
+      * == telemetry data -- via -- unary requests /
+        * use [Export*ServiceRequest](https://github.com/open-telemetry/opentelemetry-proto) messages 
+          * | logs, 
+            * [ExportLogsServiceRequest](../opentelemetry/proto/collector/logs/v1/logs_service.proto)
+          * | metrics,
+            * [ExportMetricsServiceRequest](../opentelemetry/proto/collector/metrics/v1/metrics_service.proto)
+          * | traces,
+            * [ExportTraceServiceRequest](../opentelemetry/proto/collector/trace/v1/trace_service.proto)
+          * | profiles,
+            * [ExportProfilesServiceRequest](../opentelemetry/proto/collector/profiles/v1development/profiles_service.proto)
+  * the server
+    * expects to receive a response / EACH request
+  * _Example:_ NO intermediary nodes
 
-![Request-Response](img/otlp-request-response.png)
+    ![Request-Response](img/otlp-request-response.png)
 
-_Note: this protocol is concerned with the reliability of delivery between one
-pair of client/server nodes and aims to ensure that no data is lost in transit
-between the client and the server. Many telemetry collection systems have
-intermediary nodes that the data must travel across until reaching the final
-destination (e.g. application -> agent -> collector -> backend). End-to-end
-delivery guarantees in such systems is outside of the scope of OTLP. The
-acknowledgements described in this protocol happen between a single
-client/server pair and do not span intermediary nodes in multi-hop delivery
-paths._
+* systems / there are E2E
+  * delivery guarantees
+    * ⚠️outside of the scope of OTLP⚠️
 
 #### OTLP/gRPC Concurrent Requests
 
-After sending the request the client MAY wait until the response is received
-from the server. In that case there will be at most only one request in flight
+* TODO:After sending the request the client MAY wait until the response is received
+from the server
+In that case there will be at most only one request in flight
 that is not yet acknowledged by the server.
 
 ![Unary](img/otlp-sequential.png)
