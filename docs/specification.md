@@ -39,7 +39,7 @@ cascade:
 ## Protocol Details
 
 * OTLP
-  * is implemented | 
+  * 👀is implemented👀 | 
     * [gRPC](https://grpc.io/)
       * -> specified -- by -- [Protocol Buffers schema](https://developers.google.com/protocol-buffers/docs/overview)
     * HTTP transports and specifies
@@ -352,27 +352,34 @@ some in beta.
 
 #### OTLP/gRPC Default Port
 
-The default network port for OTLP/gRPC is 4317.
+* OTLP/gRPC's network port
+  * by default, 4317
 
 ### OTLP/HTTP
 
-OTLP/HTTP uses Protobuf payloads encoded either in
-[binary format](#binary-protobuf-encoding) or in [JSON format](#json-protobuf-encoding).
-Regardless of the encoding the Protobuf schema of the messages is the same for
-OTLP/HTTP and OTLP/gRPC as [defined here](../opentelemetry/proto).
-
-OTLP/HTTP uses HTTP POST requests to send telemetry data from clients to
-servers. Implementations MAY use HTTP/1.1 or HTTP/2 transports. Implementations
-that use HTTP/2 transport SHOULD fallback to HTTP/1.1 transport if HTTP/2
-connection cannot be established.
+* OTLP/HTTP
+  * uses Protobuf payloads  
+    * encoded | 
+      * [binary format](#binary-protobuf-encoding), OR
+      * [JSON format](#json-protobuf-encoding)
+    * 's schema | gRPC implementation == 's schema | HTTP implementation
+      * [definition](../opentelemetry/proto)
+  * FROM clients, send telemetry data -- , via HTTP POST, -- to servers
+  * ALLOWED
+    * HTTP/1.1, OR
+    * HTTP/2 transports
+      * if implementations / use HTTP/2 & HTTP/2 connection can NOT be established -> transport SHOULD fallback -- to -- HTTP/1.1 transport 
 
 #### Binary Protobuf Encoding
 
-Binary Protobuf encoded payloads use proto3
-[encoding standard](https://developers.google.com/protocol-buffers/docs/encoding).
+* Binary Protobuf encoded payloads 
+  * -- via -- [proto3 encoding standard](https://developers.google.com/protocol-buffers/docs/encoding)
 
-The client and the server MUST set "Content-Type: application/x-protobuf"
-request and response headers when sending binary Protobuf encoded payload.
+* client & server
+  * requirements
+    * request's headers
+      * "Content-Type: application/x-protobuf"
+    * response's headers
 
 #### JSON Protobuf Encoding
 
@@ -699,19 +706,21 @@ of clients and servers of different versions is based on the following concepts:
 
 ## Glossary
 
-There are 2 parties involved in telemetry data exchange. In this document the
-party that is the source of telemetry data is called the `Client`, the party
-that is the destination of telemetry data is called the `Server`.
+* parties / involved | telemetry data exchange
+  * `Client`
+    * == party / source of telemetry data
+    * == node
+    * _Examples:_ 
+      * instrumented applications
+      * telemetry collectors' sending side
+  * `Server`
+    * == party / destination of telemetry data
+    * == node
+    * _Examples:_
+      * telemetry backends
+      * telemetry collectors' receiving side
 
-![Client-Server](img/otlp-client-server.png)
-
-Examples of a Client are instrumented applications or sending side of telemetry
-collectors, examples of Servers are telemetry backends or receiving side of
-telemetry collectors (so a Collector is typically both a Client and a Server
-depending on which side you look from).
-
-Both the Client and the Server are also a `Node`. This term is used in the
-document when referring to either one.
+  ![Client-Server](img/otlp-client-server.png)
 
 ## References
 

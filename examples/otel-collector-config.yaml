@@ -1,0 +1,26 @@
+receivers:
+  otlp:
+    protocols:
+      # 1.  use DIRECTLY
+      # http:
+      # 2.  use | containers  -> require / listen | ANY interface
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+exporters:
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [debug]
+    metrics:
+      receivers: [otlp]
+      exporters: [debug]
+    logs:
+      receivers: [otlp]
+      exporters: [debug]
